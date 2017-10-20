@@ -10,23 +10,39 @@ class AssocOptions
   )
 
   def model_class
+    @class_name.constantize
     # ...
   end
 
   def table_name
+    @class_name.constantize.table_name
     # ...
   end
 end
 
 class BelongsToOptions < AssocOptions
   def initialize(name, options = {})
-    # ...
+    self.send(:foreign_key=, "#{name}_id".underscore.to_sym)
+    self.send(:class_name=, name.to_s.singularize.camelcase)
+    self.send(:primary_key=, :id)
+
+    options.each do |key, value|
+      setter = "#{key}="
+      self.send(setter, value)
+    end
   end
 end
 
 class HasManyOptions < AssocOptions
   def initialize(name, self_class_name, options = {})
-    # ...
+    self.send(:foreign_key=, "#{self_class_name}_id".underscore.to_sym)
+    self.send(:class_name=, name.to_s.singularize.camelcase)
+    self.send(:primary_key=, :id)
+
+    options.each do |key, value|
+      setter = "#{key}="
+      self.send(setter, value)
+    end
   end
 end
 
@@ -47,4 +63,5 @@ end
 
 class SQLObject
   # Mixin Associatable here...
+  extend Associatable
 end
