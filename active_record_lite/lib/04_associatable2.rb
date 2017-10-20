@@ -11,8 +11,7 @@ module Associatable
 
       through_table = through_options.class_name.constantize.table_name
       source_table = source_options.class_name.constantize.table_name
-      f_id  = self.send(through_table.foreign_key)
-      puts "*** f_id is #{f_id} ***"
+      f_id  = self.send(through_options.foreign_key)
 
       query = DBConnection.execute(<<-SQL, f_id)
         SELECT
@@ -24,7 +23,7 @@ module Associatable
         WHERE
           #{through_table}.#{through_options.primary_key} = ?
       SQL
-      parse_all(query)
+      source_options.class_name.constantize.parse_all(query).first
     end
   end
 end
