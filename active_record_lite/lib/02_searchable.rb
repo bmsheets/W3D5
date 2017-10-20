@@ -3,7 +3,6 @@ require_relative '01_sql_object'
 
 module Searchable
   def where(params)
-    puts params.inspect
     where_string = params.map do |key, value|
       "#{key} = '#{value}'"
     end.join(" AND ")

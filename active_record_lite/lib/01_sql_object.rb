@@ -48,12 +48,6 @@ class SQLObject
         #{table_name}
     SQL
     self.parse_all(rows)
-    # puts "rows is of class #{rows.class}"
-    # puts "row is of class #{rows.first.class}"
-    # rows.map do |row|
-    #   Cat.new(row.to_h)
-    # end
-    #self.parse_all(rows)
   end
 
   def self.parse_all(results)
@@ -86,9 +80,6 @@ class SQLObject
       if self.class.columns.include?(key.to_sym)
         self.send(setter, value)
       else
-         puts "Current class is #{self.class}"
-         puts "Columns: #{self.class.columns}"
-         puts "Key: #{key}"
         raise "unknown attribute '#{key}'" unless attributes[key]
       end
     end
