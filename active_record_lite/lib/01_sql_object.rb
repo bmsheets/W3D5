@@ -58,7 +58,7 @@ class SQLObject
 
   def self.parse_all(results)
       results.map do |result|
-        Cat.new(result)
+        self.new(result)
       end
   end
 
