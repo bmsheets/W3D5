@@ -1,5 +1,6 @@
 require_relative '02_searchable'
 require 'active_support/inflector'
+require 'byebug'
 
 # Phase IIIa
 class AssocOptions
@@ -39,7 +40,9 @@ class HasManyOptions < AssocOptions
     self.send(:class_name=, name.to_s.singularize.camelcase)
     self.send(:primary_key=, :id)
 
+    #debugger
     options.each do |key, value|
+
       setter = "#{key}="
       self.send(setter, value)
     end
@@ -49,20 +52,21 @@ end
 module Associatable
   # Phase IIIb
   def belongs_to(name, options = {})
+    self.finalize!
     options = BelongsToOptions.new(name, options)
     define_method(name) do
-      foreign_key = self.class.send(options.foreign_key)
+      foreign_key = self.send(options.foreign_key)
       model_class = options.model_class
       model_class.where(options.primary_key => foreign_key).first
     end
   end
 
   def has_many(name, options = {})
-    options = HasManyOptions.new(name, options)
+    options = HasManyOptions.new(name, self, options)
     define_method(name) do
       model_class = options.model_class
-      foreign_key = model_class.send(options.foreign_key)
-      where(options.primary_key => foreign_key).first
+      primary_key = self.send(options.primary_key)
+      model_class.where(options.foreign_key => primary_key)
     end
   end
 
